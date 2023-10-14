@@ -1,5 +1,8 @@
 # DockerStats
 CLI tool to log Docker Stats in CSV format using C# Docker Client SDK.
+
+![image](https://github.com/madhub/DockerStats/assets/8907962/2532086d-2183-4e84-b00e-96a1c650e75e)
+
 # Source code build
 1. Checkout the DockerStats repo
     ```shell
