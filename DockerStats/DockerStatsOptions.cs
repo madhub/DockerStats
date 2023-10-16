@@ -8,4 +8,7 @@ public class DockerStatsOptions
 
     [Option('o', "output", Required = false, HelpText = "output to file , default is console")]
     public string ? output { get; set; }
+
+    [Option('u', "UseUtcTimestamp",Default =true, Required = false, HelpText = "Time stamp in Utc ")]
+    public bool UseUtcTimestamp { get; set; }
 }

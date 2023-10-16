@@ -57,13 +57,13 @@ var statsCallback = new Progress<ContainerStatsResponse>(m =>
 {
 
     var dockerStats = Helper.ParseStats(m);
-    LogUtils.Log($"{m.Name},{dockerStats.CpuUsageInPercent:F2},{(long)dockerStats.MemoryUsageInKB},{(long)dockerStats.MemoryLimitInKB},{dockerStats.MemoryUsageInPercent:F2},{dockerStats.TimeStamp}");
+    LogUtils.Log($"{m.Name},{dockerStats.CpuUsageInPercent:F2},{(long)dockerStats.MemoryUsageInKB},{(long)dockerStats.MemoryLimitInKB},{dockerStats.MemoryUsageInPercent:F2},{(long)dockerStats.TotalNetworkBytesTransferedInKB},{(long)dockerStats.TotalNetworkBytesReceivedInKB},{dockerStats.TimeStamp}");
 
 
 });
 
 // Write header
-LogUtils.Log($"ContainerName,CpuPercent,MemUsageInKB,MaxAviMemInKB,MemUsageInPercent,DateTime");
+LogUtils.Log($"ContainerName,CpuPercent,MemUsageInKB,MaxAviMemInKB,MemUsageInPercent,NetReceivedBytesInKB,NetTransferedBytesInKB,DateTime");
 while (true)
 {
     var containers = await client.Containers.ListContainersAsync(containerListParameters);
@@ -71,7 +71,14 @@ while (true)
     {
         try
         {
-            await client.Containers.GetContainerStatsAsync(container.ID, containerStartsParams, statsCallback);
+            await client.Containers.GetContainerStatsAsync(container.ID, containerStartsParams,  new Progress<ContainerStatsResponse>(m =>
+            {
+
+                var dockerStats = Helper.ParseStats(m);
+                LogUtils.Log($"{m.Name},{dockerStats.CpuUsageInPercent:F2},{(long)dockerStats.MemoryUsageInKB},{(long)dockerStats.MemoryLimitInKB},{dockerStats.MemoryUsageInPercent:F2},{(long)dockerStats.TotalNetworkBytesReceivedInKB},{(long)dockerStats.TotalNetworkBytesTransferedInKB},{dockerStats.TimeStamp}");
+
+
+            }));
         }
         catch (Exception exp)
         {
@@ -81,5 +88,5 @@ while (true)
 
 
     }
-    await Task.Delay((int)TimeSpan.FromSeconds((int)parsedArgs.Value.pollfrequence).TotalMilliseconds);
+   // await Task.Delay((int)TimeSpan.FromSeconds((int)parsedArgs.Value.pollfrequence).TotalMilliseconds);
 }
