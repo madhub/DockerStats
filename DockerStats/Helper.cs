@@ -53,12 +53,14 @@ public class Helper
         (double txInBytes, double rxinBytes) NetworkTransfer = calculateNetworkTransfer(containerStatsResponse);
 
         String timeStamp = String.Empty;
+        //  using universal sortable ("u") format specifier
+        // https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings#UniversalSortable
         if (UseUtcTimestamp)
         {
-            timeStamp = DateTime.UtcNow.ToString("o", CultureInfo.InvariantCulture);
+            timeStamp = DateTime.UtcNow.ToString("u", CultureInfo.InvariantCulture);
         }else
         {
-            timeStamp = DateTime.Now.ToString("o", CultureInfo.InvariantCulture);
+            timeStamp = DateTime.Now.ToString("u", CultureInfo.InvariantCulture);
         }
         
         var stats = new DockerStats(cpuPercent,
@@ -111,11 +113,10 @@ public class Helper
         double cpuDelta = (float)containerStatsResponse.CPUStats.CPUUsage.TotalUsage - (float)previousCPU;
         double systemDelta = (float)(containerStatsResponse.CPUStats.SystemUsage) - (float)previousSystem;
         uint onlineCPUs = containerStatsResponse.CPUStats.OnlineCPUs;
-        Console.WriteLine($"onlineCPUs: {onlineCPUs}");
         if (onlineCPUs == 0)
         {
-            Console.WriteLine($"onlineCPUs: {containerStatsResponse.CPUStats.CPUUsage.PercpuUsage}");
-            onlineCPUs = (uint)containerStatsResponse.CPUStats.CPUUsage.PercpuUsage.Count();
+            onlineCPUs = containerStatsResponse.CPUStats.CPUUsage.PercpuUsage != null  ? 
+                    (uint)containerStatsResponse.CPUStats.CPUUsage.PercpuUsage?.Count() : 0;
         }
 
 
